@@ -17,7 +17,7 @@ export default function FeedPost({ stories }: { stories: Story[] }) {
   const currentStory = stories[activeIndex];
   const coverStory = stories[0]; 
 
-  const MAX_LENGTH = 80;
+  const MAX_LENGTH = 150;
   const text = coverStory.albumDescription;
   const isLong = text.length > MAX_LENGTH;
 
@@ -29,14 +29,14 @@ export default function FeedPost({ stories }: { stories: Story[] }) {
           {currentStory.albumTitle}
         </h2>
         
-        <Link 
+        <Link
           href={`/story/${coverStory.id}`} 
           title="Play Slideshow"
         >
           <svg height="25" width="25">
             <circle cx="12.5" cy="12.5" r="12" stroke="black" strokeWidth="1" fill="none" />
             <polygon 
-              points="7,6 19,12.5 7,19" 
+              points="8,7 19,12.5 8,18" 
               style={{ fill: "black", stroke: "black", strokeWidth: 2 }} 
             />
           </svg>
@@ -53,30 +53,31 @@ export default function FeedPost({ stories }: { stories: Story[] }) {
             setActiveIndex(swiper.activeIndex);
             setIsExpanded(false); // Auto-collapse when swiping
           }}
-          className="w-full 
+          className="w-full
           [&_.swiper-pagination]:!relative 
           [&_.swiper-pagination]:!bottom-0 
           [&_.swiper-pagination]:!h-5 
           [&_.swiper-pagination-bullet-active]:bg-blue-500 
           [&_.swiper-pagination-bullet]:bg-gray-300" // first 3: position the dots to be outside the image
         >
-          {stories.map((story) => (
+          {stories.map((story, idx) => (
             <SwiperSlide key={story.id}>
               {/* The image is constrained here, leaving the padding area empty for the dots */}
-              <div className="relative aspect-square w-full bg-gray-50">
-                <Link 
-                  href={`/story/${story.id}`} 
-                  title="Play Slideshow"
-                >
+              <Link 
+                href={`/story/${story.id}`} 
+                title="Play Slideshow"
+              >
+                <div className="relative aspect-square w-full bg-gray-50">
                   <Image
                     src={story.imageUrl}
                     alt={story.topDescription || 'Album image'}
-                    fill
                     className="object-cover"
+                    fill
+                    priority={idx === 0}
                     unoptimized
                   />
+                </div>
               </Link>
-            </div>
             </SwiperSlide>
           ))}
         </Swiper>
