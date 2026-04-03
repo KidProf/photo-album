@@ -18,7 +18,7 @@ export default function FeedPost({ stories }: { stories: Story[] }) {
   const coverStory = stories[0]; 
 
   const MAX_LENGTH = 80;
-  const text = currentStory.bottomDescription || '';
+  const text = coverStory.albumDescription;
   const isLong = text.length > MAX_LENGTH;
 
   return (
@@ -64,14 +64,19 @@ export default function FeedPost({ stories }: { stories: Story[] }) {
             <SwiperSlide key={story.id}>
               {/* The image is constrained here, leaving the padding area empty for the dots */}
               <div className="relative aspect-square w-full bg-gray-50">
-                <Image
-                  src={story.imageUrl}
-                  alt={story.topDescription || 'Album image'}
-                  fill
-                  className="object-cover"
-                  unoptimized
-                />
-              </div>
+                <Link 
+                  href={`/story/${story.id}`} 
+                  title="Play Slideshow"
+                >
+                  <Image
+                    src={story.imageUrl}
+                    alt={story.topDescription || 'Album image'}
+                    fill
+                    className="object-cover"
+                    unoptimized
+                  />
+              </Link>
+            </div>
             </SwiperSlide>
           ))}
         </Swiper>
@@ -89,9 +94,9 @@ export default function FeedPost({ stories }: { stories: Story[] }) {
           }`}
         >
           <p className="text-sm leading-relaxed text-gray-800">
-            <span className="mr-2 font-semibold text-gray-900">
+            {/* <span className="mr-2 font-semibold text-gray-900">
               {currentStory.topDescription}
-            </span>
+            </span> */}
             {text}
           </p>
 
@@ -107,7 +112,7 @@ export default function FeedPost({ stories }: { stories: Story[] }) {
             onClick={() => setIsExpanded(!isExpanded)} 
             className="mt-1 text-xs font-semibold text-gray-500 transition-colors hover:text-gray-800"
           >
-            {isExpanded ? 'less' : 'more'}
+            {isExpanded ? 'Less' : 'More'}
           </button>
         )}
       </div> 

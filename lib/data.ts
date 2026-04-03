@@ -8,6 +8,7 @@ export interface Story {
   topDescription: string;
   bottomDescription: string;
   isCover: boolean;       // Programmatically set to true for the first image of an album
+  albumDescription: string;
 }
 
 // Your exact requested CSV headers
@@ -16,6 +17,7 @@ interface CsvRow {
   topDescription: string;
   bottomDescription: string;
   imageId: string;
+  albumDescription: string;
 }
 
 export async function getStories(): Promise<Story[]> {
@@ -61,6 +63,7 @@ export async function getStories(): Promise<Story[]> {
       topDescription: row.topDescription || '',
       bottomDescription: row.bottomDescription || '',
       isCover: isCover,
+      albumDescription: row.albumDescription || '',
     });
   });
   

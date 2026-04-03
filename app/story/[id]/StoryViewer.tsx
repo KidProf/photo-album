@@ -13,15 +13,16 @@ import 'swiper/css';
 import 'swiper/css/effect-fade';
 
 interface StoryViewerProps {
+  initialIdx: number;
   stories: Story[];
 }
 
-export default function StoryViewer({ stories }: StoryViewerProps) {
+export default function StoryViewer({ initialIdx, stories }: StoryViewerProps) {
   const router = useRouter();
   const pathname = usePathname(); // Gives us e.g., "/story/123" or "/slideshow/123"
   
   // 1. Always start at the first story
-  const [currentIndex, setCurrentIndex] = useState(0); 
+  const [currentIndex, setCurrentIndex] = useState(initialIdx); 
   const [isPaused, setIsPaused] = useState(false);
   const swiperRef = useRef<{ swiper: SwiperType }>(null);
   
@@ -82,7 +83,7 @@ export default function StoryViewer({ stories }: StoryViewerProps) {
           ref={swiperRef}
           modules={[EffectFade]}
           effect="fade"
-          initialSlide={0} // 1. Enforce starting at the first slide
+          initialSlide={currentIndex} 
           onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
           className="h-3/4 w-full"
         >

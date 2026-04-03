@@ -17,5 +17,7 @@ export default async function StoryPage({
   if (!targetStory) return <NotFoundPage />;
 
   const albumStories = stories.filter(s => s.albumId === targetStory.albumId);
-  return <StoryViewer stories={albumStories} />;
+  const initialIdx = albumStories.findIndex(s => s.id === resolvedParams.id);
+
+  return <StoryViewer initialIdx={initialIdx} stories={albumStories} />;
 }
