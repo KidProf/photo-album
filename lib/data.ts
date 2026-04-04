@@ -9,6 +9,7 @@ export interface Story {
   bottomDescription: string;
   isCover: boolean;       // Programmatically set to true for the first image of an album
   albumDescription: string;
+  showWholeImage: boolean;
 }
 
 // Your exact requested CSV headers
@@ -18,6 +19,7 @@ interface CsvRow {
   bottomDescription: string;
   imageId: string;
   albumDescription: string;
+  showWholeImage: string;
 }
 
 export async function getStories(): Promise<Story[]> {
@@ -55,6 +57,9 @@ export async function getStories(): Promise<Story[]> {
       seenAlbums.add(albumId); // Add it to the Set so subsequent photos aren't covers
     }
 
+    // Parse "Yes" (case-insensitive) into a boolean
+    const showWhole = row.showWholeImage?.toLowerCase().trim() === 'yes';
+
     allStories.push({
       id: row.imageId, // Using imageId as the unique route parameter
       albumId: albumId,
@@ -64,6 +69,7 @@ export async function getStories(): Promise<Story[]> {
       bottomDescription: row.bottomDescription || '',
       isCover: isCover,
       albumDescription: row.albumDescription || '',
+      showWholeImage: showWhole,
     });
   });
   

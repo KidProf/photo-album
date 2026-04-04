@@ -19,112 +19,169 @@ interface StoryViewerProps {
 
 export default function StoryViewer({ initialIdx, stories }: StoryViewerProps) {
   const router = useRouter();
-  const pathname = usePathname(); // Gives us e.g., "/story/123" or "/slideshow/123"
+  const pathname = usePathname();
   
-  // 1. Always start at the first story
-  const [currentIndex, setCurrentIndex] = useState(initialIdx); 
+  const [currentIndex, setCurrentIndex] = useState(initialIdx);
   const [isPaused, setIsPaused] = useState(false);
   const swiperRef = useRef<{ swiper: SwiperType }>(null);
   
   const STORY_DURATION = 5000;
 
-  // 2. Update URL dynamically as the story advances
   useEffect(() => {
     if (stories.length === 0 || !stories[currentIndex]) return;
-    
-    // Extract the base mode ("story" or "slideshow") from the current URL
     const basePath = pathname.split('/')[1]; 
     const currentStoryId = stories[currentIndex].id;
-    
-    // Silently update the URL bar without triggering a Next.js server fetch
     window.history.replaceState(null, '', `/${basePath}/${currentStoryId}`);
   }, [currentIndex, stories, pathname]);
 
-  // Handle manual right-clicks
+  const handleComplete = useCallback(() => {
+    router.push('/');
+  }, [router]);
+
   const handleNextClick = useCallback(() => {
-    // 4. If on the last story and they click next, return home
     if (currentIndex >= stories.length - 1) {
-      router.push('/');
+      handleComplete();
     } else {
       swiperRef.current?.swiper.slideNext();
     }
-  }, [currentIndex, router, stories.length]);
+  }, [currentIndex, stories.length, handleComplete]);
 
-  // Auto-advance logic
   useEffect(() => {
     if (isPaused || stories.length === 0) return;
-
     const timer = setTimeout(() => {
       handleNextClick();
     }, STORY_DURATION);
-
     return () => clearTimeout(timer);
-  }, [currentIndex, handleNextClick, isPaused, stories.length]);
+  }, [currentIndex, isPaused, stories.length, handleNextClick]);
 
   if (stories.length === 0) return null;
 
+  const currentStory = stories[currentIndex];
+  const hasText = Boolean(currentStory?.topDescription || currentStory?.bottomDescription);
+
   return (
-    <div className="flex h-screen w-full justify-center bg-black">
-      {/* Changed to black background for a better viewing experience */}
-      <div className="relative h-full w-full max-w-md overflow-hidden bg-black shadow-xl">
+    <div className="flex h-screen w-full justify-center bg-black sm:bg-neutral-900">
+      
+      {/* Required for the progress bar animation */}
+      <style>{`
+        @keyframes fillProgress {
+          0% { width: 0%; }
+          100% { width: 100%; }
+        }
+      `}</style>
+
+      <div className="relative h-full w-full max-w-xl overflow-hidden bg-black shadow-xl">
         
-        {/* Top Navigation */}
-        <div className="absolute top-0 z-20 flex w-full items-center justify-between bg-gradient-to-b from-black/70 to-transparent px-4 pt-4 pb-8">
-          <Link href="/" className="text-xl font-bold text-white drop-shadow-md">
-            <Image src="/smile-transparent.png" alt="Memories Logo" width={32} height={32} />
-          </Link>
-          <div className="text-sm font-medium text-white drop-shadow-md max-w-[200px] truncate text-center">
-            {stories[currentIndex]?.topDescription}
-          </div>
-          <div className="w-6" /> {/* Spacer to keep text perfectly centered */}
+        {/* 1. Progress Bars */}
+        <div className="absolute top-0 z-30 flex w-full gap-1 px-2 pt-2">
+          {stories.map((story, idx) => (
+            <div key={story.id} className="h-1 flex-1 overflow-hidden rounded-full bg-white/30 backdrop-blur-sm">
+              <div
+                className="h-full bg-white"
+                style={{
+                  // Bars before current are full, bars after are empty
+                  width: idx < currentIndex ? '100%' : '0%',
+                  
+                  // Break the shorthand into individual properties to satisfy React
+                  animationName: idx === currentIndex ? 'fillProgress' : 'none',
+                  animationDuration: `${STORY_DURATION}ms`,
+                  animationTimingFunction: 'linear',
+                  animationFillMode: 'forwards',
+                  
+                  // Now play state can be updated independently without conflict!
+                  animationPlayState: isPaused ? 'paused' : 'running',
+                }}
+              />
+            </div>
+          ))}
         </div>
 
+        {/* Top Navigation */}
+        <div className="absolute top-0 z-20 flex w-full items-center justify-start gap-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent px-4 pb-12 pt-6 pointer-events-none">
+          <Link href="/" className="pointer-events-auto drop-shadow-md shrink-0">
+            <Image 
+              src="/smile-transparent.png" 
+              alt="Memories Logo" 
+              width={32} 
+              height={32} 
+              className="rounded-full object-cover" 
+            />
+          </Link>
+          <div className="text-sm font-bold text-white drop-shadow-md truncate">
+            {currentStory?.albumTitle}
+          </div>
+        </div>
+
+        {/* Swiper Container */}
         <Swiper
           ref={swiperRef}
           modules={[EffectFade]}
           effect="fade"
-          initialSlide={currentIndex} 
+          initialSlide={initialIdx}
           onSlideChange={(swiper) => setCurrentIndex(swiper.activeIndex)}
-          className="h-3/4 w-full"
+          onTouchStart={() => setIsPaused(true)}
+          onTouchEnd={() => setIsPaused(false)}
+          onClick={(swiper, event) => {
+            let clickX: number | undefined;
+            if ("clientX" in event) {
+              clickX = event.clientX;
+            } else if ("changedTouches" in event) {
+              clickX = event.changedTouches?.[0]?.clientX;
+            }
+            if (clickX === undefined) return;
+            if (clickX < window.innerWidth / 3) {
+              swiper.slidePrev(); 
+            } else {
+              handleNextClick();
+            }
+          }}
+          className="h-full w-full"
         >
           {stories.map((story) => (
-            <SwiperSlide key={story.id}>
-              {/* Interaction areas */}
+            <SwiperSlide key={story.id} className="bg-black">
+              {/* Responsive safe-area padding for showWholeImage */}
               <div 
-                className="absolute inset-0 z-10 flex"
-                onMouseDown={() => setIsPaused(true)}
-                onMouseUp={() => setIsPaused(false)}
-                onTouchStart={() => setIsPaused(true)}
-                onTouchEnd={() => setIsPaused(false)}
+                className={`relative h-full w-full flex items-center justify-center transition-all ${
+                  story.showWholeImage ? 'pt-20 pb-48 sm:pb-36' : ''
+                }`}
               >
-                {/* 3. Swiper naturally ignores slidePrev() if on the first slide, staying put */}
-                <div 
-                  className="h-full w-1/3 cursor-pointer" 
-                  onClick={() => swiperRef.current?.swiper.slidePrev()} 
-                />
-                <div 
-                  className="h-full w-2/3 cursor-pointer" 
-                  onClick={handleNextClick} 
+                <Image
+                  src={story.imageUrl}
+                  alt={story.albumTitle}
+                  fill
+                  className="object-contain"
+                  unoptimized
+                  priority 
                 />
               </div>
-
-              <Image
-                src={story.imageUrl}
-                alt={story.albumTitle}
-                fill
-                className="object-contain" // Changed to contain so photos aren't cropped
-                unoptimized
-              />
             </SwiperSlide>
           ))}
         </Swiper>
 
         {/* Bottom Description */}
-        <div className="h-1/4 w-full overflow-y-auto border-t border-gray-800 bg-black p-4">
-          <p className="whitespace-pre-wrap text-sm text-gray-200">
-            {stories[currentIndex]?.bottomDescription}
-          </p>
-        </div>
+        {hasText && (
+          // Responsive height container matching the showWholeImage padding
+          <div className="absolute bottom-0 z-20 flex w-full flex-col bg-gradient-to-t from-black/95 via-black/80 to-transparent px-4 pb-6 pt-12 h-48 sm:h-36 pointer-events-none">
+            
+            {/* 2. Scrollable container that controls the pause state */}
+            <div 
+              className="flex-1 overflow-y-auto pointer-events-auto overscroll-contain pb-2"
+              onMouseEnter={() => setIsPaused(true)}
+              onMouseLeave={() => setIsPaused(false)}
+              onTouchStart={() => setIsPaused(true)}
+              onTouchEnd={() => setIsPaused(false)}
+            >
+              <p className="text-sm text-gray-200 drop-shadow-md leading-relaxed whitespace-pre-wrap">
+                {currentStory?.topDescription && (
+                  <span className="font-semibold text-white mr-2">
+                    {currentStory?.topDescription}
+                  </span>
+                )}
+                {currentStory?.bottomDescription}
+              </p>
+            </div>
+          </div>
+        )}
 
       </div>
     </div>
