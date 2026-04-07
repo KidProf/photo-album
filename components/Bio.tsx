@@ -3,6 +3,7 @@ import Image from 'next/image';
 const CONTACT_LINKS = [
   { id: 'instagram', href: 'https://instagram.com', src: '/instagram.png', text: 'Instagram', isExternal: true },
   { id: 'facebook', href: 'https://facebook.com', src: '/facebook.png', text: 'Facebook', isExternal: true },
+  { id: 'whatsapp', href: 'https://www.whatsapp.com/', src: '/whatsapp.png', text: "Whatsapp", isExternal: true},
   { id: 'github', href: 'https://github.com', src: '/github.png', text: 'Github', isExternal: true },
   { id: 'email', href: 'mailto:', src: '/gmail.png', text: 'Email', isExternal: false },
   { id: 'phone', href: 'tel:', src: '/phone.png', text: '+44 1234 567888', isExternal: false },
