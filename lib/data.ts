@@ -22,6 +22,16 @@ interface CsvRow {
   showWholeImage: string;
 }
 
+function extractGoogleId(input: string): string {
+  // This Regex looks for the /d/ or id= patterns used by Google Drive
+  const regex = /(?:\/d\/|id=)([\w-]+)|([\w-]{25,})/; // first half: check for /d/<id> or id=<id>, second half: check for pure alphanumeric (+hyphen) id (as full links has other symbols like /)
+  const match = input.match(regex);
+  
+  // If we find a match, it returns the captured group (the ID)
+  // Otherwise, it returns the original string (in case it was already just the ID)
+  return match ? (match[1] || match[2]) : input.trim();
+}
+
 export async function getStories(): Promise<Story[]> {
   const csvUrl = process.env.GOOGLE_CSV_URL;
 
@@ -45,11 +55,19 @@ export async function getStories(): Promise<Story[]> {
 
   parsedData.data.forEach((row) => {
     // Skip empty rows or rows where you forgot to paste the image ID
-    if (!row.imageId) return; 
+    const cleanId = extractGoogleId(row.imageId || '');
+    if (!cleanId) return; 
 
     const albumTitle = row.album || 'Memories';
+    
     // Convert "Summer Vacation 2025!" to "summer-vacation-2025" for clean filtering
-    const albumId = albumTitle.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+    // This version supports Unicode (u flag) and looks for 
+    // any character that isn't a "Word" character (L = Letter, N = Number)
+    const albumId = albumTitle
+      .toLowerCase()
+      .trim()
+      .replace(/[^\p{L}\p{N}]+/gu, '-') // The 'gu' flags allow Unicode matching
+      .replace(/^-+|-+$/g, '');        // Cleans up leading/trailing dashes
     
     // If the Set doesn't have this albumId yet, it's the first one we're seeing!
     const isCover = !seenAlbums.has(albumId);
@@ -61,10 +79,10 @@ export async function getStories(): Promise<Story[]> {
     const showWhole = row.showWholeImage?.toLowerCase().trim() === 'yes';
 
     allStories.push({
-      id: row.imageId, // Using imageId as the unique route parameter
+      id: cleanId, // Using imageId as the unique route parameter
       albumId: albumId,
       albumTitle: albumTitle,
-      imageUrl: `https://drive.google.com/thumbnail?id=${row.imageId}&sz=w1000`,
+      imageUrl: `https://drive.google.com/thumbnail?id=${cleanId}&sz=w1000`,
       topDescription: row.topDescription || '',
       bottomDescription: row.bottomDescription || '',
       isCover: isCover,
