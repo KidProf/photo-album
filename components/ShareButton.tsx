@@ -21,14 +21,11 @@ export default function ShareButton({
 }: ShareButtonProps) {
   const [isCopied, setIsCopied] = useState(false);
   const handlePress = async (e: React.MouseEvent | React.TouchEvent) => {
-    console.log("sharebutton");
     // Prevent the click from triggering parent events (like opening a story)
     e.stopPropagation();
 
     if (onStart) onStart();
     
-    const url = window.location.href;
-
     if (navigator.share) {
       try {
         await navigator.share({
