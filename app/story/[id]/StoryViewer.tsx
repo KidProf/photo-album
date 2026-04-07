@@ -25,7 +25,7 @@ export default function StoryViewer({ initialIdx, stories }: StoryViewerProps) {
   const [isPaused, setIsPaused] = useState(false);
   const swiperRef = useRef<{ swiper: SwiperType }>(null);
   
-  const STORY_DURATION = 5000;
+  const STORY_DURATION = 15000;
 
   // --- NEW REFS FOR TIMING & TOUCH LOGIC ---
   // useRef: change of values would not cause rerender. (While if useState value is changed it will cause rerender)
@@ -55,7 +55,7 @@ export default function StoryViewer({ initialIdx, stories }: StoryViewerProps) {
 
   // --- UPGRADED TIMER LOGIC ---
   useEffect(() => {
-    // 1. If the slide changed naturally or via swipe, reset the timer to full 5000ms
+    // 1. If the slide changed naturally or via swipe, reset the timer to full 15000ms
     if (lastIndexRef.current !== currentIndex) {
       remainingTimeRef.current = STORY_DURATION;
       lastIndexRef.current = currentIndex;
