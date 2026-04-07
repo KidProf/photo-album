@@ -35,8 +35,8 @@ export default function StoryViewer({ initialIdx, stories }: StoryViewerProps) {
   }, [currentIndex, stories, pathname]);
 
   const handleComplete = useCallback(() => {
-    router.push('/');
-  }, [router]);
+    router.push(`/#${stories[0].albumId}`);
+  }, [router, stories]);
 
   const handleNextClick = useCallback(() => {
     if (currentIndex >= stories.length - 1) {
