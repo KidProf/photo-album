@@ -2,6 +2,7 @@ import { getStories, Story } from '@/lib/data';
 import Image from 'next/image';
 import FeedPost from '@/components/FeedPost';
 import Bio from '@/components/Bio';
+import Header from '@/components/Header';
 
 export default async function Home() {
   const allStories = await getStories();
@@ -20,11 +21,7 @@ export default async function Home() {
   return (
     <main className="min-h-screen bg-white px-8 xl:px-16">
       
-      {/* <header className="sticky top-0 z-20 flex items-center justify-between border-b border-gray-200 bg-white/80 px-4 py-4 backdrop-blur-md text-black"> */}
-      <header className="flex justify-center items-center py-4 border-b border-gray-200 text-black">
-        <Image src="/smile-black-transparent.png" alt="Memories Logo" width={32} height={32} className="mr-2" />
-        <h1 className="font-bold text-xl">Happy&apos;s Photo Album</h1>
-      </header>
+      <Header />
 
       <Bio />
 
