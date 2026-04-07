@@ -13,6 +13,7 @@ import 'swiper/css/pagination';
 export default function FeedPost({ stories }: { stories: Story[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
+  const [isCopied, setIsCopied] = useState(false);
   
   const currentStory = stories[activeIndex];
   const coverStory = stories[0]; 
@@ -21,26 +22,43 @@ export default function FeedPost({ stories }: { stories: Story[] }) {
   const text = coverStory.albumDescription;
   const isLong = text.length > MAX_LENGTH;
 
+  const handleCopyLink = () => {
+    // Construct the full URL using the current window location and the albumId hash
+    const url = `${window.location.origin}/#${currentStory.albumId}`;
+    
+    navigator.clipboard.writeText(url).then(() => {
+      setIsCopied(true);
+      // Reset the icon back to a link after 2 seconds
+      setTimeout(() => setIsCopied(false), 2000);
+    });
+  };
+
   return (
-    <article className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm">
+    <article id={currentStory.albumId} className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm scroll-mt-24">
       
       <div className="flex items-center justify-between px-4 py-3">
         <h2 className="font-semibold text-gray-800">
           {currentStory.albumTitle}
         </h2>
         
-        <Link
-          href={`/story/${coverStory.id}`} 
-          title="Play Slideshow"
+        {/* 4. The new Copy Link Button */}
+        <button 
+          onClick={handleCopyLink}
+          className="flex items-center justify-center rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+          title="Copy link to album"
         >
-          <svg height="25" width="25">
-            <circle cx="12.5" cy="12.5" r="12" stroke="black" strokeWidth="1" fill="none" />
-            <polygon 
-              points="8,7 19,12.5 8,18" 
-              style={{ fill: "black", stroke: "black", strokeWidth: 2 }} 
-            />
-          </svg>
-        </Link>
+          {isCopied ? (
+            // Success Checkmark Icon
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-5 w-5 text-green-600">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+            </svg>
+          ) : (
+            // Link Icon
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
+              <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
+            </svg>
+          )}
+        </button>
       </div>
       
      {/* Image & Slider */}
