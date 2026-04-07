@@ -11,6 +11,7 @@ import type { Story } from '@/lib/data';
 
 import 'swiper/css';
 import 'swiper/css/effect-fade';
+import ShareButton from '@/components/ShareButton';
 
 interface StoryViewerProps {
   initialIdx: number;
@@ -23,6 +24,7 @@ export default function StoryViewer({ initialIdx, stories }: StoryViewerProps) {
   
   const [currentIndex, setCurrentIndex] = useState(initialIdx);
   const [isPaused, setIsPaused] = useState(false);
+
   const swiperRef = useRef<{ swiper: SwiperType }>(null);
   
   const STORY_DURATION = 15000;
@@ -118,19 +120,32 @@ export default function StoryViewer({ initialIdx, stories }: StoryViewerProps) {
         </div>
 
         {/* Top Navigation */}
-        <div className="absolute top-0 z-20 flex w-full items-center justify-start gap-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent px-4 pb-12 pt-6 pointer-events-none">
-          <Link href="/" className="pointer-events-auto drop-shadow-md shrink-0">
-            <Image 
-              src="/smile-transparent.png" 
-              alt="Memories Logo" 
-              width={32} 
-              height={32} 
-              className="rounded-full object-cover" 
-            />
-          </Link>
-          <div className="text-sm font-bold text-white drop-shadow-md truncate">
-            {currentStory?.albumTitle}
+        <div className="absolute top-0 z-20 flex w-full items-center justify-between gap-3 bg-gradient-to-b from-black/80 via-black/40 to-transparent px-4 pb-12 pt-6">
+          
+          {/* Left Side: Logo and Title */}
+          <div className="flex items-center gap-3 min-w-0">
+            <Link href="/" className="pointer-events-auto drop-shadow-md shrink-0">
+              <Image 
+                src="/smile-transparent.png" 
+                alt="Memories Logo" 
+                width={32} 
+                height={32} 
+                className="rounded-full object-cover" 
+              />
+            </Link>
+            <div className="text-sm font-bold text-white drop-shadow-md truncate">
+              {currentStory?.albumTitle}
+            </div>
           </div>
+
+          {/* Right Side: Share Button */}
+          <ShareButton 
+            url={typeof window !== "undefined" ? window.location.href : "" /* window is not defined on startup */}
+            title={currentStory?.albumTitle}
+            onStart={() => setIsPaused(true)}
+            onEnd={() => setIsPaused(false)}
+            className="share-btn-shield h-9 w-9 p-1.5 text-white drop-shadow-md" // the sheild is set so that the share button takes priority over the click event check in Swiper
+          />
         </div>
 
         {/* Swiper Container */}
@@ -150,7 +165,6 @@ export default function StoryViewer({ initialIdx, stories }: StoryViewerProps) {
           onClick={(swiper, event) => {
             // Check how long the finger was down
             const pressDuration = Date.now() - pressStartTimeRef.current;
-            
             // If held for more than 200ms, it was a pause, NOT a click. Abort navigation.
             if (pressDuration > 200) return;
 

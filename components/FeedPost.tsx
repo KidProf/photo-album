@@ -9,6 +9,7 @@ import type { Story } from '@/lib/data';
 
 import 'swiper/css';
 import 'swiper/css/pagination';
+import ShareButton from './ShareButton';
 
 export default function FeedPost({ stories }: { stories: Story[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
@@ -22,17 +23,6 @@ export default function FeedPost({ stories }: { stories: Story[] }) {
   const text = coverStory.albumDescription;
   const isLong = text.length > MAX_LENGTH;
 
-  const handleCopyLink = () => {
-    // Construct the full URL using the current window location and the albumId hash
-    const url = `${window.location.origin}/#${currentStory.albumId}`;
-    
-    navigator.clipboard.writeText(url).then(() => {
-      setIsCopied(true);
-      // Reset the icon back to a link after 2 seconds
-      setTimeout(() => setIsCopied(false), 2000);
-    });
-  };
-
   return (
     <article id={currentStory.albumId} className="flex flex-col overflow-hidden rounded-xl border border-theme-border shadow-sm scroll-mt-24">
       
@@ -42,23 +32,11 @@ export default function FeedPost({ stories }: { stories: Story[] }) {
         </h2>
         
         {/* 4. The new Copy Link Button */}
-        <button 
-          onClick={handleCopyLink}
-          className="flex items-center justify-center rounded-md p-1.5 text-theme-muted transition-colors hover:bg-theme-primary-bg hover:opacity-80"
-          title="Copy link to album"
-        >
-          {isCopied ? (
-            // Success Checkmark Icon
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={2} stroke="currentColor" className="h-5 w-5 text-green-600">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
-            </svg>
-          ) : (
-            // Link Icon
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" strokeWidth={1.5} stroke="currentColor" className="h-5 w-5">
-              <path strokeLinecap="round" strokeLinejoin="round" d="M13.19 8.688a4.5 4.5 0 011.242 7.244l-4.5 4.5a4.5 4.5 0 01-6.364-6.364l1.757-1.757m13.35-.622l1.757-1.757a4.5 4.5 0 00-6.364-6.364l-4.5 4.5a4.5 4.5 0 001.242 7.244" />
-            </svg>
-          )}
-        </button>
+        <ShareButton 
+          url={typeof window !== 'undefined' ? `${window.location.origin}/#${currentStory.albumId}` : "" /* window is not defined on startup */}
+          title={currentStory.albumTitle}
+          className="h-8 w-8 p-1.5 text-theme-muted hover:bg-theme-primary-bg hover:text-theme-primary"
+        />
       </div>
       
      {/* Image & Slider */}
