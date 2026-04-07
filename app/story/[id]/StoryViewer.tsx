@@ -85,7 +85,7 @@ export default function StoryViewer({ initialIdx, stories }: StoryViewerProps) {
   const hasText = Boolean(currentStory?.topDescription || currentStory?.bottomDescription);
 
   return (
-    <div className="flex h-screen w-full justify-center bg-black sm:bg-neutral-900">
+    <div className="flex h-[100dvh] w-full justify-center bg-black sm:bg-neutral-900">
 
       {/* Required for the progress bar animation */}
       <style>{`
@@ -184,6 +184,10 @@ export default function StoryViewer({ initialIdx, stories }: StoryViewerProps) {
                   unoptimized
                   priority 
                 />
+                {/* Place an invisible div over the image to completely shield it 
+                  from the browser's "Save Image" image-detection logic.
+                */}
+                <div className="absolute inset-0 z-10" />
               </div>
             </SwiperSlide>
           ))}
