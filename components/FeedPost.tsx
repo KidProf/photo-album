@@ -34,7 +34,7 @@ export default function FeedPost({ stories }: { stories: Story[] }) {
   };
 
   return (
-    <article id={currentStory.albumId} className="flex flex-col overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm scroll-mt-24">
+    <article id={currentStory.albumId} className="flex flex-col overflow-hidden rounded-xl border border-theme-border shadow-sm scroll-mt-24">
       
       <div className="flex items-center justify-between px-4 py-3">
         <h2 className="font-semibold text-gray-800">
@@ -44,7 +44,7 @@ export default function FeedPost({ stories }: { stories: Story[] }) {
         {/* 4. The new Copy Link Button */}
         <button 
           onClick={handleCopyLink}
-          className="flex items-center justify-center rounded-md p-1.5 text-gray-500 transition-colors hover:bg-gray-100 hover:text-gray-900"
+          className="flex items-center justify-center rounded-md p-1.5 text-theme-muted transition-colors hover:bg-theme-primary-bg hover:opacity-80"
           title="Copy link to album"
         >
           {isCopied ? (
@@ -75,8 +75,8 @@ export default function FeedPost({ stories }: { stories: Story[] }) {
           [&_.swiper-pagination]:!relative 
           [&_.swiper-pagination]:!bottom-0 
           [&_.swiper-pagination]:!h-5 
-          [&_.swiper-pagination-bullet-active]:bg-blue-500 
-          [&_.swiper-pagination-bullet]:bg-gray-300" // first 3: position the dots to be outside the image
+          [&_.swiper-pagination-bullet-active]:bg-theme-primary 
+          [&_.swiper-pagination-bullet]:bg-theme-primary-bg" // first 3: position the dots to be outside the image
         >
           {stories.map((story, idx) => (
             <SwiperSlide key={story.id}>
@@ -112,7 +112,7 @@ export default function FeedPost({ stories }: { stories: Story[] }) {
             isExpanded || !isLong ? 'max-h-[800px]' : 'max-h-[44px]'
           }`}
         >
-          <p className="text-sm leading-relaxed text-gray-800">
+          <p className="text-sm leading-relaxed">
             {/* <span className="mr-2 font-semibold text-gray-900">
               {currentStory.topDescription}
             </span> */}

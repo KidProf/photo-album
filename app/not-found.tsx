@@ -3,7 +3,7 @@ import Link from "next/link";
 
 export default function NotFound() {
   return (
-    <main className="min-h-screen bg-white sm:bg-gray-50 flex flex-col items-center">
+    <main className="min-h-screen flex flex-col items-center">
       {/* Top Nav (Same as Home Page) */}
       <Header />
       
@@ -15,7 +15,7 @@ export default function NotFound() {
         </p>
         <Link 
           href="/" 
-          className="rounded-full bg-blue-600 px-6 py-2.5 text-sm font-medium text-white hover:bg-blue-700 transition-colors"
+          className="rounded-full bg-theme-primary px-6 py-2.5 text-sm font-medium text-white hover:opacity-90 transition-colors"
         >
           Return to Homepage
         </Link>

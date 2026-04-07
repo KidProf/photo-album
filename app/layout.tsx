@@ -27,7 +27,10 @@ export default function RootLayout({
       lang="en"
       className={`${geistSans.variable} ${geistMono.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      {/* If you want to test dark theme, use className="theme-dark" */}
+      <body className="bg-theme-main text-theme-text min-h-full flex flex-col">
+        {children}
+      </body>
     </html>
   );
 }

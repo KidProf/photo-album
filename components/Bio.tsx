@@ -12,7 +12,7 @@ const CONTACT_LINKS = [
 const BioSection = () => (
     <>
       {/* Bio Text */}
-      <p className="text-slate-700 leading-relaxed text-sm md:text-base mb-4">
+      <p className="leading-relaxed text-sm md:text-base mb-4">
         Template for a photo album. A visual diary of the moments, people, and places we hold dear.
       </p>
 
@@ -40,11 +40,11 @@ const BioSection = () => (
 
 export default function Bio() {
   return (
-    <section className="w-full mx-auto p-4 bg-white text-slate-900">
+    <section className="w-full mx-auto p-4">
       <div className="flex flex-row items-start gap-4 md:gap-8">
         {/* Avatar */}
         <div className="flex-shrink-0">
-          <div className="relative w-20 h-20 md:w-32 md:h-32 rounded-full overflow-hidden border border-slate-200">
+          <div className="relative w-20 h-20 md:w-32 md:h-32 rounded-full overflow-hidden border border-theme-border">
             <Image 
               src="/pfp.png" 
               alt="Happy" 
@@ -60,7 +60,7 @@ export default function Bio() {
         <div className="flex flex-col flex-grow">
           <div>
             <h1 className="text-xl md:text-3xl font-bold">Happy</h1>
-            <p className="text-slate-500 text-sm">Full Stack Developer</p>
+            <p className="text-theme-muted text-sm">Full Stack Developer</p>
           </div>
           {/* Desktop Bio: Appears to the right of avatar */}
           <div className="hidden md:block mt-4">

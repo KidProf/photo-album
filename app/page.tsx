@@ -19,7 +19,7 @@ export default async function Home() {
   const groupedAlbums = Array.from(albumsMap.values());
 
   return (
-    <main className="min-h-screen bg-white px-8 xl:px-16">
+    <main className="min-h-screen px-8 xl:px-16">
       
       <Header />
 
