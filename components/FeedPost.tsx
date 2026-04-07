@@ -14,7 +14,6 @@ import ShareButton from './ShareButton';
 export default function FeedPost({ stories }: { stories: Story[] }) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isExpanded, setIsExpanded] = useState(false);
-  const [isCopied, setIsCopied] = useState(false);
   
   const currentStory = stories[activeIndex];
   const coverStory = stories[0]; 

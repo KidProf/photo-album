@@ -34,7 +34,7 @@ export default function ShareButton({
           url: url,
         });
         if (onEnd) onEnd();
-      } catch (error) {
+      } catch { // error is unused
         // Users frequently dismiss the share sheet without sharing, which throws a harmless error.
         if (onEnd) onEnd();
       }
